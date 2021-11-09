@@ -7,12 +7,15 @@
 
 import Foundation
 import Alamofire
+import RealmSwift
 
 
 final class NetworkManager
 {
     static let shared = NetworkManager()
     var friends : Friends  = Friends(results: [])
+    var isFriendsEmpty : Bool = true
+    
     private init() {}
     
     struct Constants {
@@ -27,6 +30,7 @@ final class NetworkManager
         }
     
     func getRandomUsersList(){
+        
         let request = AF.request(Constants.randomUsersAPI,method: .get, parameters: .none, headers: .none, interceptor: .none)
         
         request.validate(statusCode: 200 ..< 299).responseJSON { AFdata in
@@ -36,7 +40,11 @@ final class NetworkManager
             do{
                 let friendsList = try JSONDecoder().decode(Friends.self
                                                            , from: listData)
-                self.friends = friendsList
+                DispatchQueue.main.async {
+                    self.friends = friendsList
+                    self.isFriendsEmpty = false
+                }
+
             }catch{
                 print("Error Decoding == \(error)")
             }

@@ -7,12 +7,15 @@
 
 import UIKit
 import Kingfisher
+import RealmSwift
 
 class FriendListViewController : UIViewController
 {
 
     private let friendsCollectionView = UICollectionView(frame: .zero,collectionViewLayout: UICollectionViewFlowLayout())
     private let friendsList = NetworkManager.shared.friends
+    let realm = try! Realm()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -22,6 +25,32 @@ class FriendListViewController : UIViewController
         friendsCollectionView.dataSource = self
         friendsCollectionView.backgroundColor = .white
         setUpLayouts()
+        
+        if(!NetworkManager.shared.isFriendsEmpty){
+            try! realm.write({
+                realm.deleteAll()
+            })
+
+            try! realm.write({
+                for fr in friendsList.results{
+                    let friend_object = FriendRealm()
+                    friend_object.name = fr.name.first
+                    friend_object.title = fr.name.title
+                    friend_object.surname = fr.name.last
+                    friend_object.nat = fr.nat
+                    friend_object.city = fr.location.city
+                    friend_object.phone = fr.phone
+                    friend_object.longitude = fr.location.coordinates.longitude
+                    friend_object.latitude = fr.location.coordinates.latitude
+                    let url = NSURL(string: fr.picture.large)
+                    let imgData = NSData(contentsOf: url! as URL)
+                    friend_object.imagedata = imgData
+                    realm.add(friend_object)
+                }
+            })
+        }
+      
+        
     }
 
     private func setUpLayouts(){
@@ -32,7 +61,6 @@ class FriendListViewController : UIViewController
         friendsCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8).isActive = true
     }
     
-    
 }
 
 
@@ -42,16 +70,31 @@ extension FriendListViewController : UICollectionViewDataSource
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as! FriendCollectionViewCell
         cell.backgroundColor = .white
-        let imageUrl = ImageResource(downloadURL: URL(string: friendsList.results[indexPath.item
-        ].picture.large)!)
-        cell.nameLabel.text = friendsList.results[indexPath.item].name.first
-        cell.lastNameLabel.text = friendsList.results[indexPath.item].name.last
-        cell.friendImageView.kf.setImage(with: imageUrl)
+        if(NetworkManager.shared.isFriendsEmpty){
+            let people = realm.objects(FriendRealm.self)
+            cell.nameLabel.text = people[indexPath.item].name
+            cell.lastNameLabel.text = people[indexPath.item].surname
+            cell.friendImageView.image = UIImage(data: people[indexPath.item].imagedata! as Data)
+            cell.friendImageView.backgroundColor = .yellow
+        }else{
+            let imageUrl = ImageResource(downloadURL: URL(string: friendsList.results[indexPath.item
+            ].picture.large)!)
+            cell.nameLabel.text = friendsList.results[indexPath.item].name.first
+            cell.lastNameLabel.text = friendsList.results[indexPath.item].name.last
+            cell.friendImageView.kf.setImage(with: imageUrl)
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return friendsList.results.count
+        
+        if(NetworkManager.shared.isFriendsEmpty){
+            let people = realm.objects(FriendRealm.self)
+            return people.count
+        }else{
+            return friendsList.results.count
+
+        }
     }
 }
 

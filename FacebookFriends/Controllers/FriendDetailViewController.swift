@@ -8,11 +8,13 @@
 import UIKit
 import Kingfisher
 import MapKit
+import RealmSwift
 
 class FriendDetailViewController : UIViewController
 {
 
     var friendDetailIndex : Int = 0
+    let realm = try! Realm()
     
     private var friendImageView : UIImageView = {
         let imageView = UIImageView()
@@ -151,7 +153,12 @@ class FriendDetailViewController : UIViewController
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        mapRender(lat: NetworkManager.shared.friends.results[friendDetailIndex].location.coordinates.latitude, long: NetworkManager.shared.friends.results[friendDetailIndex].location.coordinates.longitude)
+        if(NetworkManager.shared.isFriendsEmpty){
+            let people = realm.objects(FriendRealm.self)
+            mapRender(lat: people[friendDetailIndex].latitude, long: people[friendDetailIndex].longitude)
+        }else{
+            mapRender(lat: NetworkManager.shared.friends.results[friendDetailIndex].location.coordinates.latitude, long: NetworkManager.shared.friends.results[friendDetailIndex].location.coordinates.longitude)
+        }
     }
     
     private func setupUI(){
@@ -160,13 +167,26 @@ class FriendDetailViewController : UIViewController
         view.addSubview(nationalityTextLabel)
         view.addSubview(stackView_0)
         view.addSubview(mapView)
-        let imageUrl = ImageResource(downloadURL: URL(string: NetworkManager.shared.friends.results[friendDetailIndex
-        ].picture.large)!)
-        friendImageView.kf.setImage(with: imageUrl)
-        friendNameTextLabel.text = "\(NetworkManager.shared.friends.results[friendDetailIndex].name.title) \(NetworkManager.shared.friends.results[friendDetailIndex].name.first) \(NetworkManager.shared.friends.results[friendDetailIndex].name.last)"
-        nationalityTextLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].nat
-        phoneLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].phone
-        locationLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].location.city
+        
+        if(NetworkManager.shared.isFriendsEmpty){
+            let people = realm.objects(FriendRealm.self)
+            friendImageView.image = UIImage(data: people[friendDetailIndex].imagedata! as Data)
+            friendImageView.backgroundColor = .yellow
+            friendNameTextLabel.text = "\(people[friendDetailIndex].title) \(people[friendDetailIndex].name) \(people[friendDetailIndex].surname)"
+            nationalityTextLabel.text = people[friendDetailIndex].nat
+            phoneLabel.text = people[friendDetailIndex].phone
+            locationLabel.text = people[friendDetailIndex].city
+            
+        }else{
+            let imageUrl = ImageResource(downloadURL: URL(string: NetworkManager.shared.friends.results[friendDetailIndex
+            ].picture.large)!)
+            friendImageView.kf.setImage(with: imageUrl)
+            friendNameTextLabel.text = "\(NetworkManager.shared.friends.results[friendDetailIndex].name.title) \(NetworkManager.shared.friends.results[friendDetailIndex].name.first) \(NetworkManager.shared.friends.results[friendDetailIndex].name.last)"
+            nationalityTextLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].nat
+            phoneLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].phone
+            locationLabel.text = NetworkManager.shared.friends.results[friendDetailIndex].location.city
+        }
+
     }
     
     private func setLayout(){
