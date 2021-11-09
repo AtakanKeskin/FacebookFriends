@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-//        let navVC = UINavigationController(rootViewController: LoginViewController())
-        let navVC = UINavigationController(rootViewController: FriendListViewController())
+        let navVC = UINavigationController(rootViewController: LoginViewController())
+//        let navVC = UINavigationController(rootViewController: FriendListViewController())
         window.rootViewController = navVC
 
         window.makeKeyAndVisible()

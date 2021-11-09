@@ -5,4 +5,5 @@ target 'FacebookFriends' do
   pod 'Alamofire', '~> 5.4'
   pod 'AlamofireImage', '~> 4.1'
   pod 'Realm', '~> 10.18'
+  pod 'Kingfisher', '~> 7.1'
 end

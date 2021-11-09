@@ -55,8 +55,8 @@ class LoginViewController : UIViewController, UITextFieldDelegate
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        userNameTextField.setBottomLine(borderColor: UIColor.red)
-        passwordTextField.setBottomLine(borderColor: UIColor.red)
+        userNameTextField.setBottomLine(borderColor: UIColor.systemBlue)
+        passwordTextField.setBottomLine(borderColor: UIColor.systemBlue)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -73,7 +73,7 @@ class LoginViewController : UIViewController, UITextFieldDelegate
             let alert = UIAlertController(title: "Alert", message: "Please Enter your Password", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
-        }else if(userNameTextField.text == "brownpeacock226" && passwordTextField.text == "hayabusa")
+        }else if(userNameTextField.text == "A" && passwordTextField.text == "a")
         {
             let vc  = FriendListViewController()
             vc.navigationItem.largeTitleDisplayMode = .never

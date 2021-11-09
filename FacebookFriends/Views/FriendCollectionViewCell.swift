@@ -18,6 +18,8 @@ class FriendCollectionViewCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .systemBackground
+        imageView.layer.cornerRadius = 16.0
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -52,13 +54,21 @@ class FriendCollectionViewCell: UICollectionViewCell {
        return stackView
     }()
     
+    private let lineView : UIView = {
+        let view_0 = UIView()
+        view_0.translatesAutoresizingMaskIntoConstraints = false
+        view_0.backgroundColor = .systemBlue
+        return view_0
+    }()
+    
     override init(frame : CGRect) {
         super.init(frame: frame)
         contentView.addSubview(friendImageView)
         contentView.addSubview(stackView)
+        contentView.addSubview(lineView)
 //        contentView.addSubview(nameLabel)
 //        contentView.addSubview(lastNameLabel)
-        contentView.backgroundColor = .systemBlue
+        contentView.backgroundColor = .systemBackground
         stackView.backgroundColor = .systemBackground
         
         
@@ -74,6 +84,10 @@ class FriendCollectionViewCell: UICollectionViewCell {
         
         stackView.addArrangedSubview(nameLabel)
         stackView.addArrangedSubview(lastNameLabel)
+        
+        lineView.heightAnchor.constraint(equalToConstant: 2).isActive = true
+        lineView.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
+        lineView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         
         
     }

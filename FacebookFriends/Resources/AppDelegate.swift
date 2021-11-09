@@ -16,11 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let window = UIWindow(frame: UIScreen.main.bounds)
         
-//        let navVC = UINavigationController(rootViewController: LoginViewController())
-          let navVC = UINavigationController(rootViewController: FriendListViewController())
+        NetworkManager.shared.getRandomUsersList()
+        
+        let navVC = UINavigationController(rootViewController: LoginViewController())
+//          let navVC = UINavigationController(rootViewController: FriendListViewController())
         window.rootViewController = navVC
         window.makeKeyAndVisible()
         self.window = window
+        
         
         return true
     }

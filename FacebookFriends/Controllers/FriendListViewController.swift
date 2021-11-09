@@ -6,12 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
 
 class FriendListViewController : UIViewController
 {
 
     private let friendsCollectionView = UICollectionView(frame: .zero,collectionViewLayout: UICollectionViewFlowLayout())
-    
+    private let friendsList = NetworkManager.shared.friends
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -41,12 +42,16 @@ extension FriendListViewController : UICollectionViewDataSource
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as! FriendCollectionViewCell
         cell.backgroundColor = .white
-    
+        let imageUrl = ImageResource(downloadURL: URL(string: friendsList.results[indexPath.item
+        ].picture.large)!)
+        cell.nameLabel.text = friendsList.results[indexPath.item].name.first
+        cell.lastNameLabel.text = friendsList.results[indexPath.item].name.last
+        cell.friendImageView.kf.setImage(with: imageUrl)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return friendsList.results.count
     }
 }
 
@@ -54,6 +59,10 @@ extension FriendListViewController : UICollectionViewDataSource
 extension FriendListViewController : UICollectionViewDelegate
 {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let targetView = FriendDetailViewController()
+        targetView.friendDetailIndex = indexPath.item
+        targetView.navigationItem.title = "Friend Details"
+        navigationController?.pushViewController(targetView, animated: true)
         
     }
 }
